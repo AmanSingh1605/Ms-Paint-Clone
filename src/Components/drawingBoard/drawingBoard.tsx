@@ -138,7 +138,7 @@ export default function DrawingBoard() {
         pen.strokeStyle = primaryColor;
         pen.lineWidth = brushWidth;
         pen.lineCap = currentBrushType.value;
-        pen.lineTo(e.clientX - bounding.left, e.clientY - bounding.top);
+        pen.lineTo(e.clientX - bounding.left + 4, e.clientY - bounding.top + 20);
         pen.stroke();
       }
       if (currentTool && currentTool.name === "Eraser") {
@@ -150,9 +150,9 @@ export default function DrawingBoard() {
       }
       if (currentTool && currentTool.name === "Pencil") {
         pen.strokeStyle = primaryColor;
-        pen.lineWidth = 0.1;
+        pen.lineWidth = 1;
         pen.lineCap = "square";
-        pen.lineTo(e.clientX - bounding.left, e.clientY - bounding.top);
+        pen.lineTo(e.clientX - bounding.left + 3, e.clientY - bounding.top + 18);
         pen.stroke();
       }
     };
@@ -185,6 +185,42 @@ export default function DrawingBoard() {
       if (currentTool) paper.removeEventListener("click", clickDrawTool);
     };
   }, [primaryColor, secondaryColor, brushWidth, currentBrushType, currentTool]);
+
+  //handle cursor type
+  useEffect(() => {
+    const paper = canvasRef.current;
+    function changeCursor() {
+      if (currentTool) {
+        if (currentTool.name === "Pencil") {
+          paper.style.cursor = "url(/pencil-cursor.png), auto";
+        }
+        else if (currentTool.name === "Picker") {
+          paper.style.cursor = "url(/picker-cursor.png), auto";
+        }
+        else if (currentTool.name === "Eraser") {
+          // paper.style.cursor = ''
+        }
+        else if( currentTool.name === 'Fill'){
+          paper.style.cursor = 'url(/fill-cursor.svg), auto'
+        }
+      } else if (currentBrushType) {
+        paper.style.cursor = "url(/brush-cursor.svg), auto";
+      } else {
+        paper.style.cursor = "normal";
+      }
+    }
+    function resetCursor() {
+      paper.style.cursor = "normal";
+    }
+
+    paper.addEventListener("mouseenter", changeCursor);
+    paper.addEventListener("mouseleave", resetCursor);
+
+    return () => {
+      paper.removeEventListener("mouseenter", changeCursor);
+      paper.removeEventListener("mouseleave", resetCursor);
+    };
+  }, [currentTool]);
 
   return (
     <div className="h-full w-full" ref={boardRef}>
