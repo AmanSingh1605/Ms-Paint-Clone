@@ -41,6 +41,7 @@ export default function Pannel5() {
     if (colorType == "primary") setPrimaryColor(value);
     else setSecondaryColor(value);
   };
+
   const paintTray = paintArray.map((item, index) => {
     return (
       <div
@@ -53,7 +54,7 @@ export default function Pannel5() {
   });
 
   return (
-    <div className="flex gap-2 px-2">
+    <div className="flex gap-2 px-2 h-full items-center justify-center">
       <div className="flex flex-col justify-center items-center gap-2">
         <div
           className={`h-10 w-10 border border-white outline-black ${

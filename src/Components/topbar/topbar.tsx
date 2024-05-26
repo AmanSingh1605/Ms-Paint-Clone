@@ -7,14 +7,15 @@ import Pannel6 from "../Pannels/pannel6/pannel6";
 
 export default function Topbar() {
   return (
-    <div className="h-fit w-full  bg-blue-200 flex items-center justify-start">
-      <div className="min-w-[1300px] flex divide-x-2 items-center">
+    <div className="w-full bg-blue-200">
+      <div className="min-w-[1300px] flex items-stretch divide-x-2  h-28 p-2 ">
         <Pannel1 />
         <Pannel2 />
         <Pannel3 />
         <Pannel6 />
         <Pannel4 />
         <Pannel5 />
+        {/* <div className="h-full"></div> */}
       </div>
     </div>
   );

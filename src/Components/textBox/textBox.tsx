@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { MainContext } from "@/Contexts/mainContext";
+import { useContext, useEffect, useRef, useState } from "react";
 
 export default function TextBox({
   xAxis,
@@ -17,6 +18,7 @@ export default function TextBox({
   const textBoxRef = useRef(null);
   const containerRef = useRef(null);
 
+  //used to resize the textBox as text is input
   useEffect(() => {
     if (containerRef.current) {
       if (textBoxRef.current.scrollHeight >= textBoxRef.current.clientHeight) {
@@ -27,6 +29,7 @@ export default function TextBox({
     }
   }, [textBoxRef.current, containerRef.current, data]);
 
+  //Used to resize the textbox
   useEffect(() => {
     function resizeTextbox(e) {
       if (resize.status) {
@@ -70,6 +73,7 @@ export default function TextBox({
     };
   }, [resize]);
 
+  //
   useEffect(() => {
     function printText(e) {
       const containerArea = containerRef.current.getBoundingClientRect();

@@ -7,10 +7,8 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Web-Paint",
-  description: "Created By AmAn, Next.js project",
-  icons: {
-    icon: "/favicon.png",
-  },
+  description: "Created By Aman, next.js project",
+  icons: { icon: "/favicon.png" },
 };
 
 export default function RootLayout({

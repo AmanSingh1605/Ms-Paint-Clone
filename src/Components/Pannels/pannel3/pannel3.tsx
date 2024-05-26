@@ -1,5 +1,4 @@
 "use client";
-
 import { IoColorFillOutline } from "react-icons/io5";
 import { BiPencil } from "react-icons/bi";
 import { LuEraser } from "react-icons/lu";
@@ -53,7 +52,7 @@ export default function Pannel3() {
     );
   });
   return (
-    <div className="h-full w-fit px-2">
+    <div className="h-full w-fit px-2 flex items-center justify-center">
       <div className="grid grid-cols-3">{paintToolTiles}</div>
     </div>
   );

@@ -7,7 +7,7 @@ import { PiPaintBrushDuotone } from "react-icons/pi";
 export default function Pannel6() {
   const [menuVisible, setMenuVisible] = useState(false);
   return (
-    <div className="h-full w-fit px-2 py-2">
+    <div className="h-full w-fit px-2 py-2 items-end justify-center">
       <div className="flex flex-col justify-center items-center">
         <PiPaintBrushDuotone className="border-2 border-white rounded bg-white h-full w-full p-2" />
         <div className="text-sm">{"Brushes"}</div>

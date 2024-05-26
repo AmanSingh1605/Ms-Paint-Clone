@@ -1,13 +1,17 @@
 "use client";
 import { MainContext } from "@/Contexts/mainContext";
+import { printText } from "@/Service/Functions/printText";
 import handlePaintFill, { intializeBlankpaper } from "@/Service/Tools/FillTool";
+import PickerTool from "@/Service/Tools/PickerTool";
 import { TextTool } from "@/Service/Tools/TextTool";
 import { useContext, useEffect, useRef, useState } from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 
 export default function DrawingBoard() {
   const {
     primaryColor,
     secondaryColor,
+    setPrimaryColor,
     brushWidth,
     currentTool,
     currentBrushType,
@@ -16,51 +20,37 @@ export default function DrawingBoard() {
   const [loading, setLoading] = useState(false); //loading of canvas
   const [resize, setResize] = useState({ status: false, direction: "s" }); //resizing of canvas
   const [textBoxArray, setTextBox] = useState([]);
+  const [eraserSize, setEraserSize] = useState(12);
 
   //Ref declaration
   const canvasRef = useRef(null);
   const boardRef = useRef(null);
   const containerRef = useRef(null);
+  const eraserRef = useRef(null);
 
-  function printText(text, startX, startY, endX, endY) {
-    const addLineBreaks = (paragraph) => paragraph.replace(/\n/g, "<br/>");
-
-    const brText = addLineBreaks(text);
-    const svgCode = `
-    <svg width="${Math.round(endX - startX)}" height="${Math.round(
-      endY - startY
-    )}" xmlns="http://www.w3.org/2000/svg">
-        <foreignObject x="0" y="0" width="${Math.round(
-          endX - startX
-        )}" height="${Math.round(endY - startY)}">
-            <style>
-            p{  
-                color: ${"%23" + primaryColor.substring(1)};
-                background-color: ${"%23" + secondaryColor.substring(1)};
-                height: ${endY - startY};
-                width: ${endX - startX};
-                font-size: 20px;
-                line-height: 1.5;
-                margin:0;
-                word-wrap: break-word;
-                word-break: break;
-            }
-            </style>
-            <p xmlns="http://www.w3.org/1999/xhtml"> 
-            ${brText}
-            </p>
-        </foreignObject>
-    </svg>`;
-
-    const svgCodeEncoded = svgCode.replace(/\n/g, "").replace(/"/g, "'");
-    console.log(svgCodeEncoded);
-    const img = document.createElement("img");
-    img.onload = () => {
-      const ctx = canvasRef.current.getContext("2d");
-      ctx.drawImage(img, startX, startY);
-    };
-    img.src = `data:image/svg+xml,${svgCodeEncoded}`;
-  }
+  //
+  useHotkeys("ctrl+i", () => {
+    if (currentTool && currentTool.name === "Eraser")
+      setEraserSize(() => {
+        return eraserSize + 1 > 50 ? 50 : eraserSize + 1;
+      });
+  });
+  useHotkeys("ctrl+y", () => {
+    if (currentTool && currentTool.name === "Eraser")
+      setEraserSize(() => {
+        return eraserSize - 1 < 6 ? 6 : eraserSize - 1;
+      });
+  });
+  //Intialize blank paper
+  useEffect(() => {
+    setLoading(true);
+    const paper = canvasRef.current;
+    const pen = paper.getContext("2d");
+    paper.height = boardRef.current.clientHeight / 2;
+    paper.width = boardRef.current.clientWidth / 2;
+    intializeBlankpaper(paper, pen);
+    setLoading(false);
+  }, []);
 
   //handle resizing of canvas
   useEffect(() => {
@@ -101,17 +91,6 @@ export default function DrawingBoard() {
     };
   }, [resize]);
 
-  //Intialize blank paper
-  useEffect(() => {
-    setLoading(true);
-    const paper = canvasRef.current;
-    const pen = paper.getContext("2d");
-    paper.height = boardRef.current.clientHeight / 2;
-    paper.width = boardRef.current.clientWidth / 2;
-    intializeBlankpaper(paper, pen);
-    setLoading(false);
-  }, []);
-
   //handle Drawing on canvas
   useEffect(() => {
     const paper = canvasRef.current;
@@ -138,21 +117,27 @@ export default function DrawingBoard() {
         pen.strokeStyle = primaryColor;
         pen.lineWidth = brushWidth;
         pen.lineCap = currentBrushType.value;
-        pen.lineTo(e.clientX - bounding.left + 4, e.clientY - bounding.top + 20);
+        pen.lineTo(
+          e.clientX - bounding.left + 4,
+          e.clientY - bounding.top + 20
+        );
         pen.stroke();
       }
       if (currentTool && currentTool.name === "Eraser") {
         pen.strokeStyle = secondaryColor;
-        pen.lineWidth = 32;
+        pen.lineWidth = eraserSize;
         pen.lineCap = "square";
         pen.lineTo(e.clientX - bounding.left, e.clientY - bounding.top);
         pen.stroke();
       }
       if (currentTool && currentTool.name === "Pencil") {
         pen.strokeStyle = primaryColor;
-        pen.lineWidth = 1;
+        pen.lineWidth = 0.1;
         pen.lineCap = "square";
-        pen.lineTo(e.clientX - bounding.left + 3, e.clientY - bounding.top + 18);
+        pen.lineTo(
+          e.clientX - bounding.left + 3,
+          e.clientY - bounding.top + 18
+        );
         pen.stroke();
       }
     };
@@ -164,11 +149,31 @@ export default function DrawingBoard() {
         const y = e.clientY - bounding.top;
 
         if (currentTool.name === "Fill") {
-          handlePaintFill(paper, pen, x, y, primaryColor);
+          handlePaintFill(paper, pen, x + 3, y + 24, primaryColor);
         }
 
         if (currentTool.name === "Text") {
-          TextTool(canvasRef, e, setTextBox, bounding.top, printText);
+          TextTool(
+            canvasRef,
+            e,
+            setTextBox,
+            bounding.top,
+            (text, startX, startY, endX, endY) =>
+              printText(
+                text,
+                startX,
+                startY,
+                endX,
+                endY,
+                primaryColor,
+                secondaryColor,
+                canvasRef
+              )
+          );
+        }
+        if (currentTool.name === "Picker") {
+          const color = PickerTool(e, canvasRef);
+          setPrimaryColor(color);
         }
       }
     };
@@ -184,43 +189,65 @@ export default function DrawingBoard() {
       paper.removeEventListener("mousemove", streamDrawTool);
       if (currentTool) paper.removeEventListener("click", clickDrawTool);
     };
-  }, [primaryColor, secondaryColor, brushWidth, currentBrushType, currentTool]);
+  }, [
+    primaryColor,
+    secondaryColor,
+    brushWidth,
+    currentBrushType,
+    currentTool,
+    eraserSize,
+  ]);
 
-  //handle cursor type
+  //Handle cursor type
   useEffect(() => {
     const paper = canvasRef.current;
     function changeCursor() {
       if (currentTool) {
         if (currentTool.name === "Pencil") {
-          paper.style.cursor = "url(/pencil-cursor.png), auto";
-        }
-        else if (currentTool.name === "Picker") {
-          paper.style.cursor = "url(/picker-cursor.png), auto";
-        }
-        else if (currentTool.name === "Eraser") {
-          // paper.style.cursor = ''
-        }
-        else if( currentTool.name === 'Fill'){
-          paper.style.cursor = 'url(/fill-cursor.svg), auto'
+          paper.style.cursor = "url(/pencil-cursor.svg), auto";
+        } else if (currentTool.name === "Picker") {
+          paper.style.cursor = "url(/picker-cursor.svg), auto";
+        } else if (currentTool.name === "Eraser") {
+          eraserRef.current.style.backgroundColor = secondaryColor;
+          eraserRef.current.style.display = "block";
+          paper.addEventListener("mousemove", eraserPosition);
+        } else if (currentTool.name === "Text") {
+          paper.style.cursor = "url(/text-cursor.svg), auto";
+        } else if (currentTool.name === "Fill") {
+          paper.style.cursor = "url(/fill-cursor.svg), auto";
+        } else {
+          paper.style.cursor = "default";
         }
       } else if (currentBrushType) {
         paper.style.cursor = "url(/brush-cursor.svg), auto";
       } else {
-        paper.style.cursor = "normal";
+        paper.style.cursor = "default";
       }
     }
-    function resetCursor() {
-      paper.style.cursor = "normal";
+
+    function changeToNormal() {
+      paper.style.cursor = "default";
+      eraserRef.current.style.display = "none";
     }
-
+    function eraserPosition(e) {
+      const boundingArea = canvasRef.current.getBoundingClientRect();
+      const eraserHeight = eraserRef.current.clientHeight;
+      const eraserWidth = eraserRef.current.clientWidth;
+      eraserRef.current.style.top =
+        e.clientY - boundingArea.top - eraserHeight / 2 + "px";
+      eraserRef.current.style.left =
+        e.clientX - boundingArea.left - eraserWidth / 2 + "px";
+    }
     paper.addEventListener("mouseenter", changeCursor);
-    paper.addEventListener("mouseleave", resetCursor);
-
+    paper.addEventListener("mouseleave", changeToNormal);
     return () => {
       paper.removeEventListener("mouseenter", changeCursor);
-      paper.removeEventListener("mouseleave", resetCursor);
+      paper.removeEventListener("mouseleave", changeToNormal);
+      if (currentTool && currentTool.name === "Eraser") {
+        paper.removeEventListener("mousemove", eraserPosition);
+      }
     };
-  }, [currentTool]);
+  }, [currentTool, secondaryColor]);
 
   return (
     <div className="h-full w-full" ref={boardRef}>
@@ -250,6 +277,15 @@ export default function DrawingBoard() {
           {textBoxArray.map((item, index) => (
             <div key={index}>{item}</div>
           ))}
+          <div
+            ref={eraserRef}
+            className="absolute border-black border hidden"
+            style={{
+              height: eraserSize + "px",
+              width: eraserSize + "px",
+              pointerEvents: "none",
+            }}
+          ></div>
         </div>
       )}
     </div>
