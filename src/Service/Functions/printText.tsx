@@ -38,7 +38,6 @@ export function printText(
     </svg>`;
 
   const svgCodeEncoded = svgCode.replace(/\n/g, "").replace(/"/g, "'");
-  console.log(svgCodeEncoded);
   const img = document.createElement("img");
   img.onload = () => {
     const ctx = canvasRef.current.getContext("2d");

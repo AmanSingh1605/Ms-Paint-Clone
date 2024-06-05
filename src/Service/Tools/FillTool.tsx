@@ -8,6 +8,7 @@ export default function handleFloodPaint(paper, pen, x, y, primaryColor) {
     r: currentPixel[0],
     g: currentPixel[1],
     b: currentPixel[2],
+    a: currentPixel[3],
   };
   const hexCode = hex2rgb(primaryColor);
   if (JSON.stringify(hexCode) !== JSON.stringify(currentColor)) {
@@ -22,18 +23,19 @@ function floodPaint(x, y, width, height, data, startColor, fillColor) {
   while (stack.length > 0) {
     const [nx, ny] = stack.pop();
     const pos = (nx + width * ny) * 4;
-
     if (nx < 0 || nx >= width || ny < 0 || ny >= height) continue;
     if (
       data[pos] !== startColor.r ||
       data[pos + 1] !== startColor.g ||
-      data[pos + 2] !== startColor.b
+      data[pos + 2] !== startColor.b ||
+      data[pos + 3] !== startColor.a
     ) {
       continue;
     }
     data[pos] = fillColor.r;
     data[pos + 1] = fillColor.g;
     data[pos + 2] = fillColor.b;
+    data[pos + 3] = fillColor.a;
 
     stack.push([nx - 1, ny]);
     stack.push([nx, ny + 1]);
@@ -46,14 +48,6 @@ const hex2rgb = (hex) => {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);
   const b = parseInt(hex.slice(5, 7), 16);
-  return { r, g, b };
+  const a = parseInt(hex.slice(7, 9), 16);
+  return { r, g, b, a };
 };
-
-//function to intialize a blank canvas
-
-export function intializeBlankpaper(paper, pen) {
-  const CanvasData = pen.getImageData(0, 0, paper.width, paper.height);
-  const data = CanvasData.data;
-  for (let i = 0; i < data.length; i++) data[i] = 255;
-  pen.putImageData(CanvasData, 0, 0);
-}

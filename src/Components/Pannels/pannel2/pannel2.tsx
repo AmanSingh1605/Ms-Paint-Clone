@@ -1,14 +1,31 @@
+"use client";
 import { LuBoxSelect } from "react-icons/lu";
 import { FiCrop } from "react-icons/fi";
 import { GiResize } from "react-icons/gi";
 import { MdRotate90DegreesCw } from "react-icons/md";
+import { useContext } from "react";
+import { MainContext } from "@/Contexts/mainContext";
 
 export default function Pannel2() {
+  const { currentTool, setCurrentBrushType, setCurrentTool } =
+    useContext(MainContext);
   return (
     <div className=" flex gap-2 px-2 h-full w-min items-center justify-center">
-      <div className="flex flex-col justify-center items-center gap-2">
+      <div
+        className={` flex flex-col p-2 rounded cursor-pointer justify-center items-center gap-2 hover:bg-blue-300/25 ${
+          currentTool && currentTool.name === "Select" ? "bg-blue-300/25" : ""
+        }`}
+        onClick={() => {
+          setCurrentBrushType(null);
+          setCurrentTool(() => {
+            return {
+              name: "Select",
+            };
+          });
+        }}
+      >
         <LuBoxSelect className="text-4xl" />
-        <div className="text-sm">{"Select"}</div>
+        <div className="text-sm ">{"Select"}</div>
       </div>
       <div className="flex flex-col items-center">
         <div className="flex gap-2">

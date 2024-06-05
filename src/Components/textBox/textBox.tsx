@@ -1,5 +1,4 @@
-import { MainContext } from "@/Contexts/mainContext";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export default function TextBox({
   xAxis,
@@ -79,21 +78,18 @@ export default function TextBox({
       const containerArea = containerRef.current.getBoundingClientRect();
       if (
         e.clientX < containerArea.left - 5 ||
-        e.clientX > containerArea.right + 5
+        e.clientX > containerArea.right + 5 ||
+        e.clientY < containerArea.top - 5 ||
+        e.clientY > containerArea.bottom + 5
       ) {
-        if (
-          e.clientY < containerArea.top - 5 ||
-          e.clientY > containerArea.bottom + 5
-        ) {
-          printFunction(
-            data,
-            containerArea.left,
-            containerArea.top - parentHeight,
-            containerArea.right,
-            containerArea.bottom - parentHeight
-          );
-          setArray([]);
-        }
+        printFunction(
+          data,
+          containerArea.left,
+          containerArea.top - parentHeight,
+          containerArea.right,
+          containerArea.bottom - parentHeight
+        );
+        setArray([]);
       }
     }
     window.addEventListener("click", printText);

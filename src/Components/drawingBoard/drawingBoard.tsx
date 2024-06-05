@@ -1,11 +1,16 @@
 "use client";
 import { MainContext } from "@/Contexts/mainContext";
 import { printText } from "@/Service/Functions/printText";
-import handlePaintFill, { intializeBlankpaper } from "@/Service/Tools/FillTool";
+import handlePaintFill from "@/Service/Tools/FillTool";
 import PickerTool from "@/Service/Tools/PickerTool";
 import { TextTool } from "@/Service/Tools/TextTool";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import SelectDiv from "../selectDiv/SelectDiv";
+import {
+  copyImageFromSelection,
+  pasteImageFromSelection,
+} from "@/Service/Functions/selectImage";
 
 export default function DrawingBoard() {
   const {
@@ -15,11 +20,13 @@ export default function DrawingBoard() {
     brushWidth,
     currentTool,
     currentBrushType,
+    setPaperDimensions,
   } = useContext(MainContext);
 
   const [loading, setLoading] = useState(false); //loading of canvas
   const [resize, setResize] = useState({ status: false, direction: "s" }); //resizing of canvas
   const [textBoxArray, setTextBox] = useState([]);
+  const [selectBoxArray, setSelectBox] = useState([]);
   const [eraserSize, setEraserSize] = useState(12);
 
   //Ref declaration
@@ -41,14 +48,21 @@ export default function DrawingBoard() {
         return eraserSize - 1 < 6 ? 6 : eraserSize - 1;
       });
   });
+
   //Intialize blank paper
   useEffect(() => {
     setLoading(true);
     const paper = canvasRef.current;
-    const pen = paper.getContext("2d");
     paper.height = boardRef.current.clientHeight / 2;
     paper.width = boardRef.current.clientWidth / 2;
-    intializeBlankpaper(paper, pen);
+    const boundingArea = paper.getBoundingClientRect();
+    setPaperDimensions(() => {
+      return {
+        height: paper.height,
+        width: paper.width,
+        boundingArea: { top: boundingArea.top, left: boundingArea.left },
+      };
+    });
     setLoading(false);
   }, []);
 
@@ -66,6 +80,13 @@ export default function DrawingBoard() {
         if (resize.direction === "e" || resize.direction === "se")
           paper.width = e.clientX - boundingArea.left;
       }
+      setPaperDimensions(() => {
+        return {
+          height: paper.height,
+          width: paper.width,
+          boundingArea: { top: boundingArea.top, left: boundingArea.left },
+        };
+      });
     }
 
     //save canvas before resizing
@@ -77,7 +98,6 @@ export default function DrawingBoard() {
     //paint the canvas using previous data after resizing
     function paintPrevious() {
       if (resize.status) {
-        intializeBlankpaper(paper, pen);
         pen.putImageData(currentCanvasData, 0, 0);
       }
       setResize({ status: false, direction: "" });
@@ -124,11 +144,13 @@ export default function DrawingBoard() {
         pen.stroke();
       }
       if (currentTool && currentTool.name === "Eraser") {
-        pen.strokeStyle = secondaryColor;
-        pen.lineWidth = eraserSize;
-        pen.lineCap = "square";
-        pen.lineTo(e.clientX - bounding.left, e.clientY - bounding.top);
-        pen.stroke();
+        pen.fillStyle = secondaryColor;
+        pen.clearRect(
+          e.clientX - bounding.left - eraserSize / 2,
+          e.clientY - bounding.top - eraserSize / 2,
+          eraserSize,
+          eraserSize
+        );
       }
       if (currentTool && currentTool.name === "Pencil") {
         pen.strokeStyle = primaryColor;
@@ -197,6 +219,36 @@ export default function DrawingBoard() {
     currentTool,
     eraserSize,
   ]);
+
+  //handle selection, copy and crop methods
+  useEffect(() => {
+    const paper = canvasRef.current;
+    const boundingArea = paper.getBoundingClientRect();
+    function pictureTools(e) {
+      if (currentTool && currentTool.name === "Select") {
+        setSelectBox(() => [
+          <SelectDiv
+            xAxis={e.clientX}
+            yAxis={e.clientY - boundingArea.top}
+            parentHeight={boundingArea.top}
+            setSelectBox={() => {
+              setSelectBox([]);
+            }}
+            getImageData={(x1, y1, x2, y2) =>
+              copyImageFromSelection(canvasRef, x1, y1, x2, y2)
+            }
+            putImageData={(x1, y1, x2, y2, imageData) =>
+              pasteImageFromSelection(canvasRef, x1, y1, x2, y2, imageData)
+            }
+          />,
+        ]);
+      }
+    }
+    paper.addEventListener("mousedown", pictureTools);
+    return () => {
+      paper.removeEventListener("mousedown", pictureTools);
+    };
+  }, [currentTool, selectBoxArray]);
 
   //Handle cursor type
   useEffect(() => {
@@ -275,6 +327,9 @@ export default function DrawingBoard() {
             }}
           ></div>
           {textBoxArray.map((item, index) => (
+            <div key={index}>{item}</div>
+          ))}
+          {selectBoxArray.map((item, index) => (
             <div key={index}>{item}</div>
           ))}
           <div
