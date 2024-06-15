@@ -1,10 +1,22 @@
 "use client";
 import { MainContext } from "@/Contexts/mainContext";
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 
 export default function DropDownBrushWidthMenu({ active, resetState }) {
   const { brushWidth, setBrushWidth } = useContext(MainContext);
   const brushWidthArray = ["2", "4", "6", "8"];
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function closeMenu(e) {
+      if (active && !menuRef.current?.contains(e.target)) {
+        resetState();
+      }
+    }
+    document.addEventListener("mousedown", closeMenu);
+    return () => document.removeEventListener("mousedown", closeMenu);
+  });
+
   const brushMenuArray = brushWidthArray.map((item, index) => {
     return (
       <div
@@ -30,6 +42,7 @@ export default function DropDownBrushWidthMenu({ active, resetState }) {
       className={`absolute w-56 z-50 border rounded p-2 bg-white ${
         !active ? "hidden" : ""
       }`}
+      ref={menuRef}
     >
       <div className="w-full flex flex-col gap-2 ">{brushMenuArray}</div>
     </div>
