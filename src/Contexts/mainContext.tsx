@@ -11,6 +11,7 @@ function MainContextProvider({ children }) {
   const [currentBrushType, setCurrentBrushType] = useState({
     name: "Brush",
     value: "round",
+    status: true,
   });
 
   const [paperDimensions, setPaperDimensions] = useState({

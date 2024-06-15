@@ -11,6 +11,7 @@ import {
   copyImageFromSelection,
   pasteImageFromSelection,
 } from "@/Service/Functions/selectImage";
+import { CaligraphyPen } from "@/Service/Functions/caligraphyPen";
 
 export default function DrawingBoard() {
   const {
@@ -122,26 +123,44 @@ export default function DrawingBoard() {
       activeBrush = true;
       pen.beginPath();
       streamDrawTool(e);
+      pen.x = e.clientX;
+      pen.y = e.clientY;
     };
 
     let stopDrawing = (e) => {
       activeBrush = false;
       setResize({ status: false, direction: "" });
+      if (pen.x || pen.y) {
+        delete pen.x;
+        delete pen.y;
+      }
     };
 
     let streamDrawTool = (e) => {
       if (!activeBrush) return;
 
       let bounding = e.target.getBoundingClientRect();
-      if (currentBrushType) {
-        pen.strokeStyle = primaryColor;
-        pen.lineWidth = brushWidth;
-        pen.lineCap = currentBrushType.value;
-        pen.lineTo(
-          e.clientX - bounding.left + 4,
-          e.clientY - bounding.top + 20
-        );
-        pen.stroke();
+      if (currentBrushType.status) {
+        if (
+          ["Brush", "Thick Brush", "Smooth Brush"].includes(
+            currentBrushType.name
+          )
+        ) {
+          pen.strokeStyle = primaryColor;
+          pen.lineWidth = brushWidth;
+          pen.lineCap = currentBrushType.value;
+          pen.lineTo(
+            e.clientX - bounding.left + 4,
+            e.clientY - bounding.top + 20
+          );
+          pen.stroke();
+        } else if (currentBrushType.name === "Caligraphy Pen") {
+          pen.strokeStyle = primaryColor;
+          pen.lineWidth = 1;
+          CaligraphyPen(e, pen, bounding, primaryColor);
+          pen.x = e.clientX;
+          pen.y = e.clientY;
+        }
       }
       if (currentTool && currentTool.name === "Eraser") {
         pen.fillStyle = secondaryColor;
@@ -270,7 +289,7 @@ export default function DrawingBoard() {
         } else {
           paper.style.cursor = "default";
         }
-      } else if (currentBrushType) {
+      } else if (currentBrushType.status) {
         paper.style.cursor = "url(/brush-cursor.svg), auto";
       } else {
         paper.style.cursor = "default";

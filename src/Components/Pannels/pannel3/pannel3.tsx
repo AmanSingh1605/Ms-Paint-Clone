@@ -5,10 +5,11 @@ import { LuEraser } from "react-icons/lu";
 import { ImTextColor } from "react-icons/im";
 import { CiPickerHalf } from "react-icons/ci";
 import { useContext } from "react";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 import { MainContext } from "@/Contexts/mainContext";
 
 export default function Pannel3() {
-  const { currentTool, setCurrentBrushType, setCurrentTool } =
+  const { currentTool, currentBrushType, setCurrentBrushType, setCurrentTool } =
     useContext(MainContext);
   const paintToolsData = [
     {
@@ -31,20 +32,24 @@ export default function Pannel3() {
       name: "Picker",
       icon: <CiPickerHalf />,
     },
+    {
+      name: "Magnify",
+      icon: <FaMagnifyingGlass />,
+    },
   ];
 
   const paintToolTiles = paintToolsData.map((item, index) => {
     return (
       <div
-        className={`border p-2 border-blue-300 cursor-pointer w-fit ${
+        className={`w-fit cursor-pointer border-y border-gray-400 p-2 ${
           currentTool && currentTool.name === item.name
-            ? "bg-blue-400"
-            : "bg-blue-200"
+            ? "bg-tool-icon-color-active bg-tool-icon-active"
+            : "bg-tool-icon-color bg-tool-icon"
         }`}
         key={index}
         onClick={() => {
           setCurrentTool(item);
-          setCurrentBrushType(null);
+          setCurrentBrushType({ ...currentBrushType, status: false });
         }}
       >
         {item.icon}
@@ -52,8 +57,11 @@ export default function Pannel3() {
     );
   });
   return (
-    <div className="h-full w-fit px-2 flex items-center justify-center">
-      <div className="grid grid-cols-3">{paintToolTiles}</div>
+    <div className="flex h-full w-fit flex-col items-center justify-between gap-2 px-2">
+      <div className="grid grid-cols-3 gap-y-1 [&>*:nth-child(3n)]:rounded-e [&>*:nth-child(3n)]:border-e [&>*:nth-child(3n+1)]:rounded-s [&>*:nth-child(3n+1)]:border-s [&>*:nth-child(3n+2)]:border-x">
+        {paintToolTiles}
+      </div>
+      <div className="text-xs text-slate-500">{"Tools"}</div>
     </div>
   );
 }

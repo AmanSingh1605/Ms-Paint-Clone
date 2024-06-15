@@ -9,20 +9,22 @@ export default function DropDownBrushTypeMenu({ active, resetState }) {
     { name: "Brush", value: "round" },
     { name: "Thick Brush", value: "square" },
     { name: "Smooth Brush", value: "butt" },
+    { name: "Caligraphy Pen", value: "none" },
   ];
   const brushMenuArray = brushTypeArray.map((item, index) => {
     return (
       <div
         className={`p-1 text-sm w-36 hover:bg-blue-200 cursor-pointer ${
-          currentBrushType && currentBrushType.name === item.name
-            ? "bg-blue-200 "
-            : "bg-white"
+          currentBrushType.name === item.name ? "bg-blue-200 " : "bg-white"
         }`}
         key={index}
         onClick={() => {
-          setCurrentBrushType(item);
-          setCurrentTool(null);
-          resetState();
+          setCurrentBrushType({
+            name: item.name,
+            value: item.value,
+            status: true,
+            });
+            resetState();
         }}
       >
         {item.name}

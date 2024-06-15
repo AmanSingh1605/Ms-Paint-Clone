@@ -17,18 +17,21 @@ export default function DropDownBrushWidthMenu({ active, resetState }) {
           resetState();
         }}
       >
-        <div className={`h-[${item}px] w-full bg-black`}></div>
+        <div
+          className={`w-full bg-black`}
+          style={{ height: item + "px" }}
+        ></div>
       </div>
     );
   });
 
   return (
     <div
-      className={`absolute w-56 z-50 border rounded p-2 h-fit bg-white ${
+      className={`absolute w-56 z-50 border rounded p-2 bg-white ${
         !active ? "hidden" : ""
       }`}
     >
-      <div className="w-full h-full flex flex-col ">{brushMenuArray}</div>
+      <div className="w-full flex flex-col gap-2 ">{brushMenuArray}</div>
     </div>
   );
 }

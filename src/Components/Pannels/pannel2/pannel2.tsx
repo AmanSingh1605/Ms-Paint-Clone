@@ -7,16 +7,20 @@ import { useContext } from "react";
 import { MainContext } from "@/Contexts/mainContext";
 
 export default function Pannel2() {
-  const { currentTool, setCurrentBrushType, setCurrentTool } =
+  const { currentTool, currentBrushType, setCurrentBrushType, setCurrentTool } =
     useContext(MainContext);
   return (
-    <div className=" flex gap-2 px-2 h-full w-min items-center justify-center">
+    <div className=" flex px-2 h-full gap-2 w-min items-center justify-center">
       <div
         className={` flex flex-col p-2 rounded cursor-pointer justify-center items-center gap-2 hover:bg-blue-300/25 ${
           currentTool && currentTool.name === "Select" ? "bg-blue-300/25" : ""
         }`}
         onClick={() => {
-          setCurrentBrushType(null);
+          setCurrentBrushType({
+            name: currentBrushType.name,
+            value: currentBrushType.value,
+            status: false,
+          });
           setCurrentTool(() => {
             return {
               name: "Select",
