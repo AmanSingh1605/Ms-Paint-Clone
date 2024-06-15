@@ -34,7 +34,7 @@ export default function Pannel3() {
     },
     {
       name: "Magnify",
-      icon: <FaMagnifyingGlass />,
+      icon: <FaMagnifyingGlass className="text-slate-400" />,
     },
   ];
 

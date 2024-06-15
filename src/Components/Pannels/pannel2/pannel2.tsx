@@ -31,7 +31,7 @@ export default function Pannel2() {
         <LuBoxSelect className="text-4xl" />
         <div className="text-sm ">{"Select"}</div>
       </div>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center text-slate-400">
         <div className="flex gap-2">
           <FiCrop />
           <div>{"Crop"}</div>
