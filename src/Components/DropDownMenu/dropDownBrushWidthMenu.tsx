@@ -20,7 +20,7 @@ export default function DropDownBrushWidthMenu({ active, resetState }) {
   const brushMenuArray = brushWidthArray.map((item, index) => {
     return (
       <div
-        className={`p-1 hover:bg-blue-200 cursor-pointer ${
+        className={`px-1 py-2 hover:bg-blue-100 transition-colors rounded duration-400 ease-in-out cursor-pointer ${
           brushWidth === item ? "bg-blue-200 " : "bg-white"
         }`}
         key={index}

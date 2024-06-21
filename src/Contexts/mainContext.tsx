@@ -9,9 +9,17 @@ function MainContextProvider({ children }) {
   const [currentTool, setCurrentTool] = useState(null);
   const [brushWidth, setBrushWidth] = useState("2");
   const [currentBrushType, setCurrentBrushType] = useState({
-    name: "Brush",
+    name: "Normal Brush",
     value: "round",
     status: true,
+  });
+
+  const [currentShapeTool, setCurrentShapeTool] = useState({
+    name: null,
+    icon: null,
+    disable: true,
+    shapeFunction: null,
+    status: false,
   });
 
   const [paperDimensions, setPaperDimensions] = useState({
@@ -35,6 +43,8 @@ function MainContextProvider({ children }) {
         setCurrentBrushType,
         paperDimensions,
         setPaperDimensions,
+        currentShapeTool,
+        setCurrentShapeTool,
       }}
     >
       {children}

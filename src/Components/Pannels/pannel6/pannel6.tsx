@@ -7,15 +7,20 @@ import { FaCaretDown } from "react-icons/fa";
 
 export default function Pannel6() {
   const [menuVisible, setMenuVisible] = useState(false);
-  const { setCurrentTool, currentBrushType, setCurrentBrushType } =
-    useContext(MainContext);
+  const {
+    setCurrentTool,
+    currentBrushType,
+    setCurrentBrushType,
+    setCurrentShapeTool,
+    currentShapeTool,
+  } = useContext(MainContext);
 
   // function setBrushActive()
   return (
     <div
       className={`h-full w-fit py-1 px-2 flex flex-col items-center justify-start rounded cursor-pointer ${
         currentBrushType.status
-          ? "bg-tool-icon-color-active bg-icon-active"
+          ? " bg-tool-icon-active bg-icon-active"
           : "hover:bg-icon-hover"
       }`}
     >
@@ -24,6 +29,7 @@ export default function Pannel6() {
         onClick={() => {
           setCurrentTool(null);
           setCurrentBrushType({ ...currentBrushType, status: true });
+          setCurrentShapeTool({ ...currentShapeTool, status: false });
         }}
       >
         <Image

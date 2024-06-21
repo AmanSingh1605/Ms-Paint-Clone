@@ -4,6 +4,7 @@ import Pannel4 from "../Pannels/pannel4/pannel4";
 import Pannel5 from "../Pannels/pannel5/pannel5";
 import Pannel3 from "../Pannels/pannel3/pannel3";
 import Pannel6 from "../Pannels/pannel6/pannel6";
+import Pannel7 from "../Pannels/pannel7/pannel7";
 
 export default function Topbar() {
   return (
@@ -15,6 +16,7 @@ export default function Topbar() {
         <Pannel6 />
         <Pannel4 />
         <Pannel5 />
+        <Pannel7 />
         {/* <div className="h-full"></div> */}
       </div>
     </div>

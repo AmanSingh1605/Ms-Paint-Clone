@@ -12,6 +12,7 @@ import {
   pasteImageFromSelection,
 } from "@/Service/Functions/selectImage";
 import { CaligraphyPen } from "@/Service/Functions/caligraphyPen";
+import DrawLine from "../shapeTools/drawLine";
 
 export default function DrawingBoard() {
   const {
@@ -22,6 +23,8 @@ export default function DrawingBoard() {
     currentTool,
     currentBrushType,
     setPaperDimensions,
+    setCurrentShapeTool,
+    currentShapeTool,
   } = useContext(MainContext);
 
   const [loading, setLoading] = useState(false); //loading of canvas
@@ -29,6 +32,7 @@ export default function DrawingBoard() {
   const [textBoxArray, setTextBox] = useState([]);
   const [selectBoxArray, setSelectBox] = useState([]);
   const [eraserSize, setEraserSize] = useState(12);
+  const [shapeSVG, setShapeSVG] = useState([]);
 
   //Ref declaration
   const canvasRef = useRef(null);
@@ -142,7 +146,7 @@ export default function DrawingBoard() {
       let bounding = e.target.getBoundingClientRect();
       if (currentBrushType.status) {
         if (
-          ["Brush", "Thick Brush", "Smooth Brush"].includes(
+          ["Normal Brush", "Square Brush", "Smooth Brush"].includes(
             currentBrushType.name
           )
         ) {
@@ -318,7 +322,41 @@ export default function DrawingBoard() {
         paper.removeEventListener("mousemove", eraserPosition);
       }
     };
-  }, [currentTool, secondaryColor]);
+  }, [currentTool, currentBrushType, secondaryColor]);
+
+  //handle Shape Tools
+  useEffect(() => {
+    const paper = canvasRef.current;
+    const boundingArea = paper.getBoundingClientRect();
+    function drawLineOnCanvas(startX, startY, endX, endY) {
+      const paper = canvasRef.current;
+      const pen = paper.getContext("2d");
+      pen.moveTo(startX, startY);
+      pen.lineTo(endX, endY);
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.stroke();
+    }
+    function shapeTool(e) {
+      if (currentShapeTool.status) {
+        setShapeSVG(() => [
+          <DrawLine
+            xAxis={e.clientX}
+            yAxis={e.clientY - boundingArea.top}
+            parentHeight={boundingArea.top}
+            resetLine={() => {
+              setShapeSVG([]);
+            }}
+            drawLineOnCanvas={drawLineOnCanvas}
+          />,
+        ]);
+      }
+    }
+    paper.addEventListener("mousedown", shapeTool);
+    return () => {
+      paper.removeEventListener("mousedown", shapeTool);
+    };
+  }, [currentShapeTool, shapeSVG, primaryColor, brushWidth]);
 
   return (
     <div className="h-full w-full" ref={boardRef}>
@@ -349,6 +387,9 @@ export default function DrawingBoard() {
             <div key={index}>{item}</div>
           ))}
           {selectBoxArray.map((item, index) => (
+            <div key={index}>{item}</div>
+          ))}
+          {shapeSVG.map((item, index) => (
             <div key={index}>{item}</div>
           ))}
           <div

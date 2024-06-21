@@ -9,8 +9,14 @@ import { FaMagnifyingGlass } from "react-icons/fa6";
 import { MainContext } from "@/Contexts/mainContext";
 
 export default function Pannel3() {
-  const { currentTool, currentBrushType, setCurrentBrushType, setCurrentTool } =
-    useContext(MainContext);
+  const {
+    currentTool,
+    currentBrushType,
+    setCurrentBrushType,
+    setCurrentTool,
+    setCurrentShapeTool,
+    currentShapeTool,
+  } = useContext(MainContext);
   const paintToolsData = [
     {
       name: "Pencil",
@@ -50,6 +56,7 @@ export default function Pannel3() {
         onClick={() => {
           setCurrentTool(item);
           setCurrentBrushType({ ...currentBrushType, status: false });
+          setCurrentShapeTool({ ...currentShapeTool, status: false });
         }}
       >
         {item.icon}

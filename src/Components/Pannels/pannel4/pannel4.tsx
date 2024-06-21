@@ -1,7 +1,7 @@
 "use client";
 import DropDownBrushWidthMenu from "@/Components/DropDownMenu/dropDownBrushWidthMenu";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import {  useState } from "react";
 import { FaCaretDown } from "react-icons/fa";
 
 export default function Pannel4() {

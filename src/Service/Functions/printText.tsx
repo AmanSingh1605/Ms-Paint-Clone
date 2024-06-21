@@ -17,7 +17,7 @@ export function printText(
   )}" xmlns="http://www.w3.org/2000/svg">
         <foreignObject x="0" y="0" width="${Math.round(
           endX - startX
-        )}" height="${Math.round(endY - startY)}">
+         )}" height="${Math.round(endY - startY)}">
             <style>
             p{  
                 color: ${"%23" + primaryColor.substring(1)};
@@ -45,3 +45,6 @@ export function printText(
   };
   img.src = `data:image/svg+xml,${svgCodeEncoded}`;
 }
+
+
+////  router.get("/:id", (req, res)=>{

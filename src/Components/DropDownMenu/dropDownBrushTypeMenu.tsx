@@ -6,8 +6,8 @@ export default function DropDownBrushTypeMenu({ active, resetState }) {
   const { currentBrushType, setCurrentTool, setCurrentBrushType } =
     useContext(MainContext);
   const brushTypeArray = [
-    { name: "Brush", value: "round" },
-    { name: "Thick Brush", value: "square" },
+    { name: "Normal Brush", value: "round" },
+    { name: "Square Brush", value: "square" },
     { name: "Smooth Brush", value: "butt" },
     { name: "Caligraphy Pen", value: "none" },
   ];
@@ -27,7 +27,7 @@ export default function DropDownBrushTypeMenu({ active, resetState }) {
   const brushMenuArray = brushTypeArray.map((item, index) => {
     return (
       <div
-        className={`p-1 text-sm w-36 hover:bg-blue-200 cursor-pointer ${
+        className={`p-1 text-sm rounded w-36 hover:bg-blue-100 cursor-pointer transition-colors duration-400 ease-in-out  ${
           currentBrushType.name === item.name ? "bg-blue-200 " : "bg-white"
         }`}
         key={index}
