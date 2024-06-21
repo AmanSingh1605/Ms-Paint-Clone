@@ -1,17 +1,17 @@
 "use client";
 import { MainContext } from "@/Contexts/mainContext";
+import { CaligraphyPen } from "@/Service/Functions/caligraphyPen";
 import { printText } from "@/Service/Functions/printText";
+import {
+  copyImageFromSelection,
+  pasteImageFromSelection,
+} from "@/Service/Functions/selectImage";
 import handlePaintFill from "@/Service/Tools/FillTool";
 import PickerTool from "@/Service/Tools/PickerTool";
 import { TextTool } from "@/Service/Tools/TextTool";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import SelectDiv from "../selectDiv/SelectDiv";
-import {
-  copyImageFromSelection,
-  pasteImageFromSelection,
-} from "@/Service/Functions/selectImage";
-import { CaligraphyPen } from "@/Service/Functions/caligraphyPen";
 import DrawLine from "../shapeTools/drawLine";
 
 export default function DrawingBoard() {
@@ -23,7 +23,6 @@ export default function DrawingBoard() {
     currentTool,
     currentBrushType,
     setPaperDimensions,
-    setCurrentShapeTool,
     currentShapeTool,
   } = useContext(MainContext);
 
@@ -131,7 +130,7 @@ export default function DrawingBoard() {
       pen.y = e.clientY;
     };
 
-    let stopDrawing = (e) => {
+    let stopDrawing = () => {
       activeBrush = false;
       setResize({ status: false, direction: "" });
       if (pen.x || pen.y) {

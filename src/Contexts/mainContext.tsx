@@ -18,7 +18,6 @@ function MainContextProvider({ children }) {
     name: null,
     icon: null,
     disable: true,
-    shapeFunction: null,
     status: false,
   });
 
