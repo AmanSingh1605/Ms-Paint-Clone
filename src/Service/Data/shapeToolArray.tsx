@@ -30,7 +30,7 @@ export const shapesList = [
   {
     name: ShapeTypes.Circle,
     icon: <FaRegCircle />,
-    disable: true,
+    disable: false,
   },
   {
     name: ShapeTypes.Rectangle,

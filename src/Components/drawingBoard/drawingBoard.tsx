@@ -13,6 +13,8 @@ import { useContext, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import SelectDiv from "../selectDiv/SelectDiv";
 import DrawLine from "../shapeTools/drawLine";
+import { ShapeTypes } from "@/Service/Data/shapeToolArray";
+import DrawCircle from "../shapeTools/drawCircle";
 
 export default function DrawingBoard() {
   const {
@@ -327,28 +329,50 @@ export default function DrawingBoard() {
   useEffect(() => {
     const paper = canvasRef.current;
     const boundingArea = paper.getBoundingClientRect();
+    const pen = paper.getContext("2d");
     function drawLineOnCanvas(startX, startY, endX, endY) {
-      const paper = canvasRef.current;
-      const pen = paper.getContext("2d");
       pen.moveTo(startX, startY);
       pen.lineTo(endX, endY);
       pen.strokeStyle = primaryColor;
       pen.lineWidth = brushWidth;
       pen.stroke();
     }
+    function drawCircleOnCanvas(startX, startY, endX, endY) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      const radX = (endX - startX) / 2;
+      const radY = (endY - startY) / 2;
+      pen.ellipse(startX + radX, startY + radY, radX, radY, 0, 0, 2 * Math.PI); //adding radius in X and y because we are subtracting the radius in component.
+      pen.stroke();
+    }
     function shapeTool(e) {
       if (currentShapeTool.status) {
-        setShapeSVG(() => [
-          <DrawLine
-            xAxis={e.clientX}
-            yAxis={e.clientY - boundingArea.top}
-            parentHeight={boundingArea.top}
-            resetLine={() => {
-              setShapeSVG([]);
-            }}
-            drawLineOnCanvas={drawLineOnCanvas}
-          />,
-        ]);
+        if (currentShapeTool.name === ShapeTypes.Line) {
+          setShapeSVG(() => [
+            <DrawLine
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawLineOnCanvas={drawLineOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.Circle) {
+          setShapeSVG(() => [
+            <DrawCircle
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawCircleOnCanvas={drawCircleOnCanvas}
+            />,
+          ]);
+        }
       }
     }
     paper.addEventListener("mousedown", shapeTool);
