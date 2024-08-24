@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# MS Paint Clone
+This project is clone of Window 7 Ms Paint Application.
+Most of the MS paint functionalities are added in this application.
 
-First, run the development server:
+This application is still in construction and more features will be added in future.
 
+Enjoy the current features in the app.
+All the contribution and ideas are welcomed.
+
+## How to Run
+
+Run the following commands:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/AmanSingh1605/Ms-Paint-Clone
+cd Ms-Paint-Clone
+npm install
+npm run dev  
 ```
+# Features
+### Brush
+- There are 4 types of brushes in which user can change the brush width except Caligraphy brush.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Brush Width
+- There are 4 option for brush width. More will be added in future, stay tuned.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Color
+- Either user can select color from preset panel or can be picked from color picker
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+### Fill And Stroke Color
+- Fill is for background color and Stroke is primary color which will affect your brush strokes, text color and bucket fill color.
 
-## Learn More
+### Tool Panel
+Tool panel have 6 tools in which 5 tool are currently working.  
+- **Pencil**: Used to draw 1px lines on canvas
+- **Bucket Fill**: Ms paint bucket fill tool, used to fill colors. Look out for gaps in closed figures😊.
+- **Eraser**: Used to remove Colors, can be used to remove backgrounds. To increase the size of eraser press **Shift + I** and to decrease the size of eraser press **Shift + Y**.
+- **Text**: Used to add text in canvas. Text color will be stroke and background color will be fill.
+- **Picker**: Use to pick colors which only modify the Stroke color. User can get color code by using color Picker wheel.
 
-To learn more about Next.js, take a look at the following resources:
+### Select Tool
+- User can select a part of drawing in canvas, can resize the select the part and can move the selected area in canvas.
+- If clicked outside it will print the selection on canvas.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contribution
+If you have any good ideas, please do contribute in this project.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Upcoming Feature
+- Add themes
+- Add Figure drawing Tool
+- Selection Rotate tool
+- Revert the changes using Ctrl + Z.
