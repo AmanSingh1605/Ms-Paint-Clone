@@ -1,5 +1,6 @@
 "use client";
 import { MainContext } from "@/Contexts/mainContext";
+import { ShapeTypes } from "@/Service/Data/shapeToolArray";
 import { CaligraphyPen } from "@/Service/Functions/caligraphyPen";
 import { printText } from "@/Service/Functions/printText";
 import {
@@ -12,9 +13,22 @@ import { TextTool } from "@/Service/Tools/TextTool";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import SelectDiv from "../selectDiv/SelectDiv";
-import DrawLine from "../shapeTools/drawLine";
-import { ShapeTypes } from "@/Service/Data/shapeToolArray";
 import DrawCircle from "../shapeTools/drawCircle";
+import DrawDiamond from "../shapeTools/drawDiamond";
+import DrawHexagon from "../shapeTools/drawHexagon";
+import DrawLine from "../shapeTools/drawLine";
+import DrawPentagon from "../shapeTools/drawPentagon";
+import DrawRectangle from "../shapeTools/drawRectangle";
+import DrawRightTriangle from "../shapeTools/drawRightTriangle";
+import DrawRoundRectangle from "../shapeTools/drawRoundRectangle";
+import DrawTriangle from "../shapeTools/drawTriangle";
+import DrawRightArrow from "../shapeTools/drawRightArrow";
+import DrawLeftArrow from "../shapeTools/drawLeftArrow";
+import DrawUpArrow from "../shapeTools/drawUpArrow";
+import DrawDownArrow from "../shapeTools/drawDownArrow";
+import DrawFivePointStar from "../shapeTools/drawFivePointStar";
+import DrawFourPointStar from "../shapeTools/drawFourPointStar";
+import DrawSixPointStar from "../shapeTools/drawSixPointStar";
 
 export default function DrawingBoard() {
   const {
@@ -346,6 +360,92 @@ export default function DrawingBoard() {
       pen.ellipse(startX + radX, startY + radY, radX, radY, 0, 0, 2 * Math.PI); //adding radius in X and y because we are subtracting the radius in component.
       pen.stroke();
     }
+    function drawRectangleOnCanvas(startX, startY, endX, endY) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.rect(startX, startY, endX - startX, endY - startY);
+      pen.stroke();
+    }
+    function drawRoundRectangleOnCanvas(startX, startY, endX, endY) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.roundRect(startX, startY, endX - startX, endY - startY, 20);
+      pen.stroke();
+    }
+    function drawTriangleOnCanvas(startX, startY, endX, endY) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.lineCap = "round";
+      pen.moveTo(startX, endY);
+      pen.lineTo((startX + endX) / 2, startY);
+      pen.lineTo(endX, endY);
+      pen.closePath();
+      pen.stroke();
+    }
+    function drawRightTriangleOnCanvas(startX, startY, endX, endY) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.lineCap = "round";
+      pen.moveTo(startX, startY);
+      pen.lineTo(startX, endY);
+      pen.lineTo(endX, endY);
+      pen.closePath();
+      pen.stroke();
+    }
+    function drawDiamondOnCanvas(startX, startY, endX, endY) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.lineCap = "round";
+      pen.moveTo(startX, (startY + endY) / 2);
+      pen.lineTo((startX + endX) / 2, startY);
+      pen.lineTo(endX, (startY + endY) / 2);
+      pen.lineTo((startX + endX) / 2, endY);
+      pen.closePath();
+      pen.stroke();
+    }
+    function drawPentagonOnCanvas(startX, startY, endX, endY) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.lineCap = "round";
+      pen.moveTo((startX + endX) / 2, startY);
+      pen.lineTo(endX, startY + (endY - startY) * 0.33);
+      pen.lineTo(startX + (endX - startX) * 0.8, endY);
+      pen.lineTo(startX + (endX - startX) * 0.2, endY);
+      pen.lineTo(startX, startY + (endY - startY) * 0.33);
+      pen.closePath();
+      pen.stroke();
+    }
+    function drawHexagonOnCanvas(startX, startY, endX, endY) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.lineCap = "round";
+      pen.moveTo((startX + endX) / 2, startY);
+      pen.lineTo(endX, startY + (endY - startY) * 0.2);
+      pen.lineTo(endX, startY + (endY - startY) * 0.8);
+      pen.lineTo((startX + endX) / 2, endY);
+      pen.lineTo(startX, startY + (endY - startY) * 0.8);
+      pen.lineTo(startX, startY + (endY - startY) * 0.2);
+      pen.closePath();
+      pen.stroke();
+    }
+    function drawArrowOnCanvas(polygonPoints) {
+      pen.beginPath();
+      pen.strokeStyle = primaryColor;
+      pen.lineWidth = brushWidth;
+      pen.lineCap = "round";
+      pen.moveTo(polygonPoints[0], polygonPoints[1]);
+      for (let i = 2; i < polygonPoints.length; i += 2)
+        pen.lineTo(polygonPoints[i], polygonPoints[i + 1]);
+      pen.closePath();
+      pen.stroke();
+    }
     function shapeTool(e) {
       if (currentShapeTool.status) {
         if (currentShapeTool.name === ShapeTypes.Line) {
@@ -370,6 +470,176 @@ export default function DrawingBoard() {
                 setShapeSVG([]);
               }}
               drawCircleOnCanvas={drawCircleOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.Rectangle) {
+          setShapeSVG(() => [
+            <DrawRectangle
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawRectangleOnCanvas={drawRectangleOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.RoundedRectangle) {
+          setShapeSVG(() => [
+            <DrawRoundRectangle
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawRoundRectangleOnCanvas={drawRoundRectangleOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.Triangle) {
+          setShapeSVG(() => [
+            <DrawTriangle
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawTriangleOnCanvas={drawTriangleOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.RightTriangle) {
+          setShapeSVG(() => [
+            <DrawRightTriangle
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawRightTriangleOnCanvas={drawRightTriangleOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.Diamond) {
+          setShapeSVG(() => [
+            <DrawDiamond
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawDiamondOnCanvas={drawDiamondOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.Pentagon) {
+          setShapeSVG(() => [
+            <DrawPentagon
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawPentagonOnCanvas={drawPentagonOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.Hexagon) {
+          setShapeSVG(() => [
+            <DrawHexagon
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawHexagonOnCanvas={drawHexagonOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.RightArrow) {
+          setShapeSVG(() => [
+            <DrawRightArrow
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawRightArrowOnCanvas={drawArrowOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.LeftArrow) {
+          setShapeSVG(() => [
+            <DrawLeftArrow
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawLeftArrowOnCanvas={drawArrowOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.UpArrow) {
+          setShapeSVG(() => [
+            <DrawUpArrow
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawUpArrowOnCanvas={drawArrowOnCanvas}
+            />,
+          ]);
+        } else if (currentShapeTool.name === ShapeTypes.DownArrow) {
+          setShapeSVG(() => [
+            <DrawDownArrow
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawDownArrowOnCanvas={drawArrowOnCanvas}
+            />,
+          ]);
+        }else if (currentShapeTool.name === ShapeTypes.FourPointStar) {
+          setShapeSVG(() => [
+            <DrawFourPointStar
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawFourPointStarOnCanvas={drawArrowOnCanvas}
+            />,
+          ]);
+        }
+         else if (currentShapeTool.name === ShapeTypes.FivePointStar) {
+          setShapeSVG(() => [
+            <DrawFivePointStar
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawFivePointStarOnCanvas={drawArrowOnCanvas}
+            />,
+          ]);
+        }
+        else if (currentShapeTool.name === ShapeTypes.SixPointStar) {
+          setShapeSVG(() => [
+            <DrawSixPointStar
+              xAxis={e.clientX}
+              yAxis={e.clientY - boundingArea.top}
+              parentHeight={boundingArea.top}
+              resetLine={() => {
+                setShapeSVG([]);
+              }}
+              drawSixPointStarOnCanvas={drawArrowOnCanvas}
             />,
           ]);
         }

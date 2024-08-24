@@ -16,7 +16,7 @@ export default function Pannel7() {
     return (
       <div
         key={index}
-        className="p-1"
+        className="p-0.5"
         onClick={() => {
           setCurrentShapeTool({ ...item, status: true });
           setCurrentBrushType({ ...currentBrushType, status: false });
