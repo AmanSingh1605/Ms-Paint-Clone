@@ -1,4 +1,4 @@
-import "color-dialog-box";
+// import "color-dialog-box";
 export default function handleColorPicker(primaryColor, setPrimaryColor) {
   const picker = document.querySelector("color-picker");
   picker.setAttribute("open", "true");

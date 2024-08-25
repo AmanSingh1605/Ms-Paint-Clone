@@ -1,8 +1,7 @@
 "use client";
 import { MainContext } from "@/Contexts/mainContext";
 import handleColorPicker from "@/Service/Functions/colorPicker";
-import React, { useContext, useState } from "react";
-import "color-dialog-box";
+import React, { useContext, useEffect, useState } from "react";
 
 export default function Pannel5() {
   const { primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =
@@ -64,6 +63,13 @@ export default function Pannel5() {
       ></div>
     );
   });
+
+  useEffect(() => {
+    // Ensure that the custom element is only defined on the client side
+    if (typeof window !== "undefined") {
+      import("color-dialog-box");
+    }
+  }, []);
 
   return (
     <div className="flex h-full items-center justify-center gap-2 px-2">
