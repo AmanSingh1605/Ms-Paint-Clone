@@ -47,6 +47,5 @@ If you have any good ideas, please do contribute in this project.
 
 ## Upcoming Feature
 - Add themes
-- Add Figure drawing Tool
 - Selection Rotate tool
 - Revert the changes using Ctrl + Z.
