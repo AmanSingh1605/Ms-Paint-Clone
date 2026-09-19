@@ -6,6 +6,7 @@ import { useLatestRef } from "@/hooks/useLatestRef";
 import { useDragInteraction } from "@/hooks/useDragInteraction";
 import { boundsSize, type Bounds, type Point } from "@/lib/canvas/bounds";
 import { cutRegion, pasteRegion } from "@/lib/tools/clipboard";
+import { useHistory } from "@/hooks/canvas/useCanvasHistory";
 import { usePaper } from "@/state";
 import { ResizeHandles } from "@/components/ui/ResizeHandles";
 
@@ -19,6 +20,7 @@ type Props = {
 // resized, then stamped back down when the user clicks away.
 export default function SelectionOverlay({ origin, canvasRef, onDone }: Props) {
   const { size } = usePaper();
+  const history = useHistory();
   const [clipboard, setClipboard] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
   const clipboardRef = useLatestRef(clipboard);
@@ -28,10 +30,13 @@ export default function SelectionOverlay({ origin, canvasRef, onDone }: Props) {
       origin,
       canvasRef,
       limit: size,
-      // Lift the pixels as soon as the region is defined.
+      // Lift the pixels as soon as the region is defined. The snapshot covers
+      // the whole cut, move and paste as one undo step.
       onSizingComplete: (finalBounds: Bounds) => {
         const canvas = canvasRef.current;
-        if (canvas) setClipboard(cutRegion(canvas, finalBounds));
+        if (!canvas) return;
+        history.commit();
+        setClipboard(cutRegion(canvas, finalBounds));
       },
     });
 

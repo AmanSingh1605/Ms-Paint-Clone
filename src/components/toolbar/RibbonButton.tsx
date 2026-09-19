@@ -2,8 +2,8 @@
 import type { ReactNode } from "react";
 import { FaCaretDown } from "react-icons/fa";
 
-// Transparent borders reserve the same box as the active state, so selecting a
-// button does not nudge its neighbours.
+// Transparent borders reserve the active state's box, so selecting a button
+// does not nudge its neighbours.
 const BASE = "rounded border border-transparent";
 const ACTIVE = "bg-tool-icon-color-active bg-tool-icon-active border-amber-300";
 const HOVER = "hover:bg-icon-hover hover:border-sky-200";
@@ -61,9 +61,8 @@ export function LargeButton({
         />
       ) : null}
 
-      {menu ? (
-        <div className="relative flex justify-center">{menu}</div>
-      ) : null}
+      {/* Anchor for the dropdown, which positions itself bottom left. */}
+      {menu ? <div className="relative w-full">{menu}</div> : null}
     </div>
   );
 }
@@ -102,7 +101,6 @@ export function SmallButton({
   );
 }
 
-// Square icon tile used by the tool grid.
 export function IconTile({
   icon,
   label,

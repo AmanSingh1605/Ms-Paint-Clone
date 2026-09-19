@@ -1,6 +1,10 @@
 "use client";
 import { useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
+import {
+  HistoryProvider,
+  useCanvasHistory,
+} from "@/hooks/canvas/useCanvasHistory";
 import { useCanvasResize } from "@/hooks/canvas/useCanvasResize";
 import { useCanvasSetup } from "@/hooks/canvas/useCanvasSetup";
 import { usePainting } from "@/hooks/canvas/usePainting";
@@ -37,10 +41,21 @@ export default function DrawingBoard() {
   const boardRef = useRef<HTMLDivElement>(null);
   const eraserRef = useRef<HTMLDivElement>(null);
 
+  const history = useCanvasHistory(canvasRef);
+
   useCanvasSetup(canvasRef, boardRef);
-  usePainting(canvasRef, eraserSize);
+  usePainting(canvasRef, eraserSize, history);
   useToolCursor(canvasRef, eraserRef);
-  const { startResize } = useCanvasResize(canvasRef);
+  const { startResize } = useCanvasResize(canvasRef, history);
+
+  useHotkeys("ctrl+z, meta+z", (event) => {
+    event.preventDefault();
+    history.undo();
+  });
+  useHotkeys("ctrl+y, ctrl+shift+z, meta+shift+z", (event) => {
+    event.preventDefault();
+    history.redo();
+  });
 
   // Shift rather than Ctrl, which would collide with the browser's redo.
   useHotkeys("shift+i", () => {
@@ -70,7 +85,10 @@ export default function DrawingBoard() {
     if (!canvas || !pen || overlay) return;
     const { x, y } = canvasPoint(event, canvas);
 
-    if (activeTool === ToolName.Fill) floodFill(canvas, pen, x, y, primary);
+    if (activeTool === ToolName.Fill) {
+      history.commit();
+      floodFill(canvas, pen, x, y, primary);
+    }
     if (activeTool === ToolName.Text) setOverlay({ kind: "text", origin: { x, y } });
     if (activeTool === ToolName.Picker) {
       const color = pickColor(event, canvas);
@@ -80,7 +98,9 @@ export default function DrawingBoard() {
 
   const commitShape = (geometry: ShapeGeometry) => {
     const pen = canvasRef.current?.getContext("2d");
-    if (pen) strokeGeometry(pen, geometry, primary, brushWidth);
+    if (!pen) return;
+    history.commit();
+    strokeGeometry(pen, geometry, primary, brushWidth);
   };
 
   const closeOverlay = () => setOverlay(null);
@@ -92,31 +112,33 @@ export default function DrawingBoard() {
 
         <PaperResizeHandles onResizeStart={startResize} />
 
-        {overlay?.kind === "shape" && (
-          <ShapeOverlay
-            shape={overlay.shape}
-            origin={overlay.origin}
-            canvasRef={canvasRef}
-            onCommit={commitShape}
-            onDone={closeOverlay}
-          />
-        )}
+        <HistoryProvider value={history}>
+          {overlay?.kind === "shape" && (
+            <ShapeOverlay
+              shape={overlay.shape}
+              origin={overlay.origin}
+              canvasRef={canvasRef}
+              onCommit={commitShape}
+              onDone={closeOverlay}
+            />
+          )}
 
-        {overlay?.kind === "selection" && (
-          <SelectionOverlay
-            origin={overlay.origin}
-            canvasRef={canvasRef}
-            onDone={closeOverlay}
-          />
-        )}
+          {overlay?.kind === "selection" && (
+            <SelectionOverlay
+              origin={overlay.origin}
+              canvasRef={canvasRef}
+              onDone={closeOverlay}
+            />
+          )}
 
-        {overlay?.kind === "text" && (
-          <TextBox
-            origin={overlay.origin}
-            canvasRef={canvasRef}
-            onDone={closeOverlay}
-          />
-        )}
+          {overlay?.kind === "text" && (
+            <TextBox
+              origin={overlay.origin}
+              canvasRef={canvasRef}
+              onDone={closeOverlay}
+            />
+          )}
+        </HistoryProvider>
 
         <EraserCursor ref={eraserRef} size={eraserSize} />
       </div>

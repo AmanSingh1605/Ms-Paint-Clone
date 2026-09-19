@@ -1,12 +1,16 @@
 import { useCallback, useRef, useState, type RefObject } from "react";
 import { useWindowEvent } from "@/hooks/useWindowEvent";
 import { usePaper } from "@/state";
+import type { CanvasHistory } from "./useCanvasHistory";
 
 export type ResizeEdge = "e" | "s" | "se";
 
 // Changing a canvas width or height clears it, so the pixels are snapshotted
 // when the drag starts and painted back when it ends.
-export function useCanvasResize(canvasRef: RefObject<HTMLCanvasElement | null>) {
+export function useCanvasResize(
+  canvasRef: RefObject<HTMLCanvasElement | null>,
+  history: CanvasHistory
+) {
   const { setSize } = usePaper();
   const [edge, setEdge] = useState<ResizeEdge | null>(null);
   const snapshot = useRef<ImageData | null>(null);
@@ -15,11 +19,13 @@ export function useCanvasResize(canvasRef: RefObject<HTMLCanvasElement | null>) 
     (direction: ResizeEdge) => {
       const canvas = canvasRef.current;
       const pen = canvas?.getContext("2d");
-      if (canvas && pen)
+      if (canvas && pen) {
+        history.commit();
         snapshot.current = pen.getImageData(0, 0, canvas.width, canvas.height);
+      }
       setEdge(direction);
     },
-    [canvasRef]
+    [canvasRef, history]
   );
 
   useWindowEvent("mousemove", (event) => {

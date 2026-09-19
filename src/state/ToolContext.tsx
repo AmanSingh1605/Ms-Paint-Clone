@@ -7,8 +7,9 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { BrushName } from "@/lib/brushes/types";
 import { ShapeTypes } from "@/lib/shapes/types";
-import { BrushName, ToolName } from "@/lib/tools/names";
+import { ToolName } from "@/lib/tools/names";
 
 // Exactly one input mode is active at a time. A single discriminator makes
 // that an invariant rather than something each panel has to maintain.
@@ -41,7 +42,7 @@ const INITIAL: ToolState = {
   mode: "brush",
   tool: null,
   shape: null,
-  brushType: BrushName.Normal,
+  brushType: BrushName.Brush,
   brushWidth: 2,
 };
 

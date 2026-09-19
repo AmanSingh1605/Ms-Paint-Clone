@@ -1,15 +1,25 @@
 @import "tailwindcss";
 
-/* Win7 Paint palette. In Tailwind v4 the theme lives here, not in a JS config.
-   The --color-x namespace generates the matching bg-x, text-x and border-x
-   utilities. */
+/* The --color-x namespace generates the matching bg-x and border-x utilities. */
 @theme {
   --color-tool-icon-color: transparent;
   --color-tool-icon-color-active: rgb(244, 212, 177);
+
+  --animate-dropdown: dropdown 120ms ease-out;
+
+  @keyframes dropdown {
+    from {
+      opacity: 0;
+      transform: translateY(-4px) scaleY(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scaleY(1);
+    }
+  }
 }
 
-/* Gradients: v4 has no --background-image-* theme namespace, so these are
-   declared as utilities to keep the original class names working. */
+/* There is no background-image theme namespace, so gradients are utilities. */
 @utility bg-navbar {
   background-image: linear-gradient(
     180deg,
@@ -58,14 +68,11 @@
   }
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body,
-html {
-  height: 100%;
-  width: 100%;
+/* Keep inside @layer base. Unlayered rules outrank every Tailwind utility. */
+@layer base {
+  body,
+  html {
+    height: 100%;
+    width: 100%;
+  }
 }

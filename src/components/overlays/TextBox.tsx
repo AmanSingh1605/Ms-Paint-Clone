@@ -5,6 +5,7 @@ import { useDragInteraction } from "@/hooks/useDragInteraction";
 import { useLatestRef } from "@/hooks/useLatestRef";
 import { boundsSize, type Point } from "@/lib/canvas/bounds";
 import { renderTextToCanvas } from "@/lib/text/renderText";
+import { useHistory } from "@/hooks/canvas/useCanvasHistory";
 import { useColors } from "@/state";
 import { ResizeHandles } from "@/components/ui/ResizeHandles";
 
@@ -21,6 +22,7 @@ type Props = {
 // size, so it skips the drag-to-size phase the other overlays use.
 export default function TextBox({ origin, canvasRef, onDone }: Props) {
   const { primary, secondary } = useColors();
+  const history = useHistory();
   const [text, setText] = useState("");
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -40,11 +42,13 @@ export default function TextBox({ origin, canvasRef, onDone }: Props) {
     consumePendingClick,
     onCommit: () => {
       const canvas = canvasRef.current;
-      if (canvas)
+      if (canvas && textRef.current) {
+        history.commit();
         renderTextToCanvas(canvas, textRef.current, boundsRef.current, {
           color: primary,
           background: secondary,
         });
+      }
       onDone();
     },
   });
