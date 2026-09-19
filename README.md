@@ -19,10 +19,27 @@ npm run dev
 ```
 # Features
 ### Brush
-- There are 4 types of brushes in which user can change the brush width except Caligraphy brush.
+The nine brushes of Windows 7 Paint, each with its own stroke behaviour rather than just a different line cap:
+
+| Brush | Stroke |
+| --- | --- |
+| Brush | plain round stroke |
+| Calligraphy brush 1 / 2 | fixed nib at -45 / +45 degrees, so thickness follows direction |
+| Airbrush | scattered dots, density follows distance travelled |
+| Oil brush | wide body with offset passes for a loaded bristle edge |
+| Crayon | opaque specks across the width, leaving paper gaps |
+| Marker | wide flat translucent, darkens where strokes cross |
+| Natural pencil | thin, jittered, faint |
+| Watercolor brush | wide dilute wash with wandering edges |
+
+All nine respond to the brush width.
 
 ### Brush Width
 - There are 4 option for brush width. More will be added in future, stay tuned.
+
+### Undo and Redo
+- **Ctrl + Z** undoes and **Ctrl + Y** redoes, up to 20 steps. **Ctrl + Shift + Z** also redoes.
+- One step covers a whole gesture: a complete brush stroke, a bucket fill, a committed shape or text box, a select-cut-move-paste, or a paper resize.
 
 ### Color
 - Either user can select color from preset panel or can be picked from color picker
@@ -55,17 +72,18 @@ src/
   hooks/        reusable behaviour
     useDragInteraction   drag-to-size, resize, move (shared by all 3 overlays)
     useWindowEvent       leak-proof listener subscription
-    canvas/              painting, cursor, setup, paper resize
+    canvas/              painting, cursor, setup, paper resize, undo history
   lib/          pure logic, no React and no DOM assumptions
-    canvas/       rectangle maths, event -> canvas coordinates
-    shapes/       shape enum + the geometry table
-    tools/        fill, picker, calligraphy, clipboard
+    brushes/      the brush registry and its painters
+    canvas/       rectangle maths, event to canvas coordinates
+    shapes/       shape enum and the geometry table
+    tools/        fill, picker, clipboard
     text/         text rasterisation
   state/        ColorContext, ToolContext, PaperContext
   types/        ambient declarations
 ```
 
-Two ideas carry most of the design:
+Four ideas carry most of the design:
 
 - **One geometry table.** Every shape is a function of the drag rectangle
   (`lib/shapes/geometry.ts`). The SVG preview and the committed canvas stroke
@@ -73,6 +91,10 @@ Two ideas carry most of the design:
   entry rather than a new component.
 - **One interaction hook.** `useDragInteraction` owns drag-to-size, the eight
   resize handles and moving. The shape, selection and text overlays share it.
+- **One brush registry.** Each brush is a painter that draws a single segment
+  (`lib/brushes/painters.ts`). Adding a brush is one function plus one entry.
+- **One dropdown.** Every ribbon menu renders through `DropdownMenu`, so they
+  share their padding, shadow, animation and outside-click behaviour.
 
 ## Contribution
 If you have any good ideas, please do contribute in this project.
@@ -80,4 +102,5 @@ If you have any good ideas, please do contribute in this project.
 ## Upcoming Feature
 - Add themes
 - Selection Rotate tool
-- Revert the changes using Ctrl + Z.
+- Crop, Resize and the clipboard buttons
+- Airbrush should keep spraying while the pointer is held still
