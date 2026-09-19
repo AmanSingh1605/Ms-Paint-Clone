@@ -1,13 +1,13 @@
-import DrawingBoard from "@/Components/drawingBoard/drawingBoard";
-import Topbar from "@/Components/topbar/topbar";
+import DrawingBoard from "@/components/canvas/DrawingBoard";
+import Toolbar from "@/components/toolbar/Toolbar";
 
 export default function Home() {
   return (
     <main
       id="boardContainer"
-      className="h-screen overflow-y-hidden w-full bg-gray-400"
+      className="h-screen w-full overflow-y-hidden bg-gray-400"
     >
-      <Topbar />
+      <Toolbar />
       <DrawingBoard />
     </main>
   );

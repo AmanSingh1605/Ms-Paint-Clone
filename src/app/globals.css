@@ -1,17 +1,60 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  .no-scrollbar::-webkit-scrollbar {
+/* Win7 Paint palette. In Tailwind v4 the theme lives here, not in a JS config.
+   The --color-x namespace generates the matching bg-x, text-x and border-x
+   utilities. */
+@theme {
+  --color-tool-icon-color: transparent;
+  --color-tool-icon-color-active: rgb(244, 212, 177);
+}
+
+/* Gradients: v4 has no --background-image-* theme namespace, so these are
+   declared as utilities to keep the original class names working. */
+@utility bg-navbar {
+  background-image: linear-gradient(
+    180deg,
+    rgba(246, 251, 255, 1) 0%,
+    rgba(223, 233, 246, 1) 26%,
+    rgba(223, 233, 246, 1) 94%,
+    rgba(220, 231, 245, 1) 100%
+  );
+}
+
+@utility bg-tool-icon {
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0) 30%,
+    rgba(255, 255, 255, 0) 70%,
+    rgba(255, 255, 255, 0.75) 100%
+  );
+}
+
+@utility bg-tool-icon-active {
+  background-image: linear-gradient(
+    180deg,
+    rgba(244, 212, 177, 1) 32%,
+    rgba(250, 204, 130, 1) 51%,
+    rgba(255, 197, 94, 1) 61%,
+    rgba(255, 186, 94, 1) 91%,
+    rgba(255, 238, 193, 1) 100%
+  );
+}
+
+@utility bg-icon-hover {
+  background-image: linear-gradient(
+    180deg,
+    rgba(201, 224, 248, 0.5) 52%,
+    rgba(201, 224, 248, 1) 100%
+  );
+}
+
+@utility no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
     display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
   }
 }
 

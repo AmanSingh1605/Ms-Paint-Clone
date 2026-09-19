@@ -42,6 +42,38 @@ Tool panel have 6 tools in which 5 tool are currently working.
 - User can select a part of drawing in canvas, can resize the select the part and can move the selected area in canvas.
 - If clicked outside it will print the selection on canvas.
 
+## Project Structure
+
+```
+src/
+  app/          Next.js routing, global styles
+  components/   UI only
+    canvas/       the paper, its resize grips, eraser cursor
+    overlays/     shape / selection / text overlays
+    toolbar/      panels and dropdown menus
+    ui/           shared pieces (resize handles)
+  hooks/        reusable behaviour
+    useDragInteraction   drag-to-size, resize, move (shared by all 3 overlays)
+    useWindowEvent       leak-proof listener subscription
+    canvas/              painting, cursor, setup, paper resize
+  lib/          pure logic, no React and no DOM assumptions
+    canvas/       rectangle maths, event -> canvas coordinates
+    shapes/       shape enum + the geometry table
+    tools/        fill, picker, calligraphy, clipboard
+    text/         text rasterisation
+  state/        ColorContext, ToolContext, PaperContext
+  types/        ambient declarations
+```
+
+Two ideas carry most of the design:
+
+- **One geometry table.** Every shape is a function of the drag rectangle
+  (`lib/shapes/geometry.ts`). The SVG preview and the committed canvas stroke
+  both read it, so they cannot disagree, and adding a shape means adding one
+  entry rather than a new component.
+- **One interaction hook.** `useDragInteraction` owns drag-to-size, the eight
+  resize handles and moving. The shape, selection and text overlays share it.
+
 ## Contribution
 If you have any good ideas, please do contribute in this project.
 
